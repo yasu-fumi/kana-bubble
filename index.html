@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>海の声</title>
+<title>Kana Bubble</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Klee+One:wght@600&family=M+PLUS+Rounded+1c:wght@500;800&display=swap">
@@ -223,6 +223,11 @@ h1.logo .k{font-family:var(--f-ui);font-weight:800;background:linear-gradient(18
 #ctrlHelp .cr{display:flex;align-items:center;gap:8px}
 #ctrlHelp .ci{font-size:22px;flex:none;width:28px;text-align:center}
 @media (max-width:640px){ #ctrlHelp{display:none} }
+/* demo version */
+.demo-badge{width:max-content;margin:2px auto 8px;padding:3px 14px;border-radius:999px;font-size:14px;font-weight:800;letter-spacing:.1em;color:#05304f;background:linear-gradient(160deg,#ffe66b,#ffad5c)}
+.card.locked{filter:saturate(.35);opacity:.65}
+.card.locked::after{content:'🔒 ' attr(data-lock);position:absolute;right:8px;bottom:8px;font-size:12px;font-weight:800;color:#fff3c4;background:rgba(0,0,0,.35);border-radius:999px;padding:2px 8px}
+.kcell.locked{opacity:.35}
 .credit-small{font-size:11px;opacity:.8;margin-top:2px}
 .langs{display:flex;justify-content:center;margin:-6px 0 16px}
 .langs .seg button{font-size:15px;padding:8px 16px}
@@ -304,9 +309,30 @@ h1.logo .k{font-family:var(--f-ui);font-weight:800;background:linear-gradient(18
 
 <div id="banner"><b></b><small></small></div>
 
+<section id="upsell" class="overlay" hidden>
+  <div class="panel glass dialog cc-panel">
+    <div style="font-size:64px">🐚🦀🪼⭐</div>
+    <h2 data-i18n="upsellTitle"></h2>
+    <p data-i18n="upsellBody"></p>
+    <div class="btns">
+      <button class="btn primary" id="btnUpsellGo">⭐ <span data-i18n="upsellBuy"></span></button>
+      <button class="btn" id="btnUpsellClose" data-i18n="upsellClose"></button>
+    </div>
+  </div>
+</section>
+
+<section id="pcOnly" class="overlay" hidden>
+  <div class="panel glass dialog">
+    <div style="font-size:64px">💻🖱️⌨️</div>
+    <h2 data-i18n="pcOnly"></h2>
+    <p data-i18n="pcOnlyBody"></p>
+  </div>
+</section>
+
 <section id="menu" class="overlay">
   <div class="panel">
     <h1 class="logo"><span class="k" data-i18n="title"></span></h1>
+    <div class="demo-badge" id="demoBadge" hidden>FREE DEMO</div>
     <p class="sub" data-i18n="subtitle"></p>
     <div class="langs"><div class="seg" id="segLang" aria-label="Language">
       <button data-v="en">English</button><button data-v="zh-Hans">简体中文</button><button data-v="zh-Hant">繁體中文</button><button data-v="ko">한국어</button><button data-v="ja">日本語</button>
@@ -388,6 +414,7 @@ h1.logo .k{font-family:var(--f-ui);font-weight:800;background:linear-gradient(18
     <div class="kgrid" id="resKana"></div>
     <div class="btns">
       <button class="btn primary" id="btnNext" hidden><span data-i18n="next"></span> ▶ <span id="nextName"></span> <small class="kbd">Enter</small></button>
+      <button class="btn primary" id="btnFull" hidden>⭐ <span data-i18n="upsellBuy"></span></button>
       <button class="btn primary" id="btnRetry">↻ <span data-i18n="retry"></span></button>
       <button class="btn" id="btnMenu" data-i18n="toMenu"></button>
     </div>
@@ -638,7 +665,7 @@ const Score = {
    {n} in a string is replaced by txt(key, {n: ...}). Japanese text uses hiragana so young players can read it. */
 const I18N = {
   ja: {
-    title: '海の声', subtitle: 'きいて、さがして、わろう！ ひらがなの バブル ゲーム',
+    title: 'Kana Bubble', subtitle: 'きいて、さがして、わろう！ ひらがなの バブル ゲーム',
     howto: 'あそびかた', howtoHint: '1 → 5 の じゅんに よんでね',
     step1: 'おとを よく きく', step2: 'おなじ もじの バブルに ほしを あてる', step3: 'パチン！ われたら せいかい',
     step4: 'ちがう バブル・じかんぎれ は ダメージ', step5: 'つづけて せいかい で コンボ！',
@@ -651,6 +678,8 @@ const I18N = {
     volVoice: 'こえ', volSfx: 'こうかおん', chart: 'もじ ひょう', chartSub: 'タップで おとを きく', rowPlay: 'ぎょうを ぜんぶ きく', close: 'とじる',
     quit: 'ゲームを おわる', creditLabel: '音声素材：',
     ctrlTitle: 'そうさ', ctrlMove: 'マウスで ⭐を うごかす', ctrlListen: 'クリック・Space：もういちど きく', ctrlPause: 'Esc・P：ポーズ',
+    pcOnly: 'この ゲームは パソコン せんようです', pcOnlyBody: 'マウスと キーボードで あそんでね。スマートフォン・タブレットには たいおうしていません。',
+    lockedLabel: 'せいひんばん', upsellTitle: 'たいけんばんを あそんで くれて ありがとう！', upsellBody: 'せいひんばんでは ひらがな 104もじ ぜんぶ（ごじゅうおん・だくおん・ようおん・ミックス）で あそべるよ。', upsellBuy: 'せいひんばんを みる', upsellClose: 'とじる', demoDone: 'たいけんばんの ぎょうを ぜんぶ クリア！ つづきは せいひんばんで。',
     pause: 'ポーズ', resume: 'つづける', toMenu: 'メニューへ', sayAgain: 'もういちど きく',
     courseLeft: 'コース クリアまで あと {n}：{list}',
     courseClear: '{name} コース クリア！', courseClearSub: 'ぜんぶの ぎょうを クリアしたよ！ すごい！', continue: 'つづける', enterHint: 'Enter キーでも すすめます',
@@ -666,7 +695,7 @@ const I18N = {
     noTts: '⚠ このブラウザは よみあげに 対応していません。', noJaVoice: '⚠ 日本語の音声が 見つかりません。',
   },
   en: {
-    title: 'Voice of the Sea', subtitle: 'Listen, find, and pop the right hiragana bubble!',
+    title: 'Kana Bubble', subtitle: 'Listen, find, and pop the right hiragana bubble!',
     howto: 'How to play', howtoHint: 'read 1 → 5',
     step1: 'Listen to the sound', step2: 'Touch the matching bubble with the star', step3: 'Pop! That\'s correct',
     step4: 'A wrong bubble or time up costs a heart', step5: 'Keep getting it right for combos!',
@@ -679,6 +708,8 @@ const I18N = {
     volVoice: 'Voice', volSfx: 'Effects', chart: 'Kana chart', chartSub: 'tap a letter to hear it', rowPlay: 'Play the whole row', close: 'Close',
     quit: 'Quit game', creditLabel: 'Voice samples: ',
     ctrlTitle: 'Controls', ctrlMove: 'Move the ⭐ with the mouse', ctrlListen: 'Click / Space: hear it again', ctrlPause: 'Esc / P: pause',
+    pcOnly: 'This game is for PC only', pcOnlyBody: 'Please play with a mouse and keyboard. Smartphones and tablets are not supported.',
+    lockedLabel: 'Full version', upsellTitle: 'Thanks for playing the demo!', upsellBody: 'The full version has all 104 hiragana — Gojūon, Dakuon & Handakuon, Yōon and Mix courses.', upsellBuy: 'Get the full version', upsellClose: 'Close', demoDone: 'You cleared every demo row! Continue in the full version.',
     pause: 'Paused', resume: 'Resume', toMenu: 'Menu', sayAgain: 'Listen again',
     courseLeft: '{n} more to clear the course: {list}',
     courseClear: '{name} course clear!', courseClearSub: 'You cleared every row — amazing!', continue: 'Continue', enterHint: 'You can also press Enter',
@@ -694,7 +725,7 @@ const I18N = {
     noTts: '⚠ This browser cannot read text aloud.', noJaVoice: '⚠ No Japanese voice found on this device.',
   },
   'zh-Hans': {
-    title: '海之声', subtitle: '听一听、找一找，戳破正确的平假名泡泡！',
+    title: 'Kana Bubble', subtitle: '听一听、找一找，戳破正确的平假名泡泡！',
     howto: '玩法', howtoHint: '按 1 → 5 的顺序阅读',
     step1: '仔细听声音', step2: '用星星碰触相同文字的泡泡', step3: '啪！泡泡破了就答对了',
     step4: '碰到错的泡泡或超时会受伤', step5: '连续答对就能连击！',
@@ -707,6 +738,8 @@ const I18N = {
     volVoice: '语音', volSfx: '音效', chart: '假名表', chartSub: '点击文字听发音', rowPlay: '播放整行', close: '关闭',
     quit: '退出游戏', creditLabel: '语音素材：',
     ctrlTitle: '操作', ctrlMove: '用鼠标移动 ⭐', ctrlListen: '点击 / Space：再听一次', ctrlPause: 'Esc / P：暂停',
+    pcOnly: '本游戏仅限电脑', pcOnlyBody: '请使用鼠标和键盘游玩。不支持智能手机和平板电脑。',
+    lockedLabel: '正式版', upsellTitle: '感谢试玩！', upsellBody: '正式版包含全部 104 个平假名——五十音、浊音・半浊音、拗音和混合课程。', upsellBuy: '查看正式版', upsellClose: '关闭', demoDone: '试玩版的所有行都过关了！请在正式版中继续。',
     pause: '暂停', resume: '继续', toMenu: '返回菜单', sayAgain: '再听一次',
     courseLeft: '距离课程全部过关还差 {n}：{list}',
     courseClear: '{name} 课程 全部过关！', courseClearSub: '所有的行都过关了！太厉害了！', continue: '继续', enterHint: '也可以按 Enter 键',
@@ -722,7 +755,7 @@ const I18N = {
     noTts: '⚠ 此浏览器不支持朗读。', noJaVoice: '⚠ 找不到日语语音。',
   },
   'zh-Hant': {
-    title: '海之聲', subtitle: '聽一聽、找一找，戳破正確的平假名泡泡！',
+    title: 'Kana Bubble', subtitle: '聽一聽、找一找，戳破正確的平假名泡泡！',
     howto: '玩法', howtoHint: '按 1 → 5 的順序閱讀',
     step1: '仔細聽聲音', step2: '用星星碰觸相同文字的泡泡', step3: '啪！泡泡破了就答對了',
     step4: '碰到錯的泡泡或超時會受傷', step5: '連續答對就能連擊！',
@@ -735,6 +768,8 @@ const I18N = {
     volVoice: '語音', volSfx: '音效', chart: '假名表', chartSub: '點擊文字聽發音', rowPlay: '播放整行', close: '關閉',
     quit: '退出遊戲', creditLabel: '語音素材：',
     ctrlTitle: '操作', ctrlMove: '用滑鼠移動 ⭐', ctrlListen: '點擊 / Space：再聽一次', ctrlPause: 'Esc / P：暫停',
+    pcOnly: '本遊戲僅限電腦', pcOnlyBody: '請使用滑鼠和鍵盤遊玩。不支援智慧型手機和平板電腦。',
+    lockedLabel: '正式版', upsellTitle: '感謝試玩！', upsellBody: '正式版包含全部 104 個平假名——五十音、濁音・半濁音、拗音和混合課程。', upsellBuy: '查看正式版', upsellClose: '關閉', demoDone: '試玩版的所有行都過關了！請在正式版中繼續。',
     pause: '暫停', resume: '繼續', toMenu: '返回選單', sayAgain: '再聽一次',
     courseLeft: '距離課程全部過關還差 {n}：{list}',
     courseClear: '{name} 課程 全部過關！', courseClearSub: '所有的行都過關了！太厲害了！', continue: '繼續', enterHint: '也可以按 Enter 鍵',
@@ -750,7 +785,7 @@ const I18N = {
     noTts: '⚠ 此瀏覽器不支援朗讀。', noJaVoice: '⚠ 找不到日語語音。',
   },
   ko: {
-    title: '바다의 목소리', subtitle: '듣고, 찾고, 알맞은 히라가나 거품을 터뜨려요!',
+    title: 'Kana Bubble', subtitle: '듣고, 찾고, 알맞은 히라가나 거품을 터뜨려요!',
     howto: '놀이 방법', howtoHint: '1 → 5 순서대로 읽어요',
     step1: '소리를 잘 들어요', step2: '같은 글자의 거품에 별을 맞혀요', step3: '펑! 터지면 정답이에요',
     step4: '틀린 거품이나 시간 초과는 하트가 줄어요', step5: '계속 맞히면 콤보!',
@@ -763,6 +798,8 @@ const I18N = {
     volVoice: '목소리', volSfx: '효과음', chart: '가나 표', chartSub: '글자를 누르면 소리가 나요', rowPlay: '행 전체 듣기', close: '닫기',
     quit: '게임 종료', creditLabel: '음성 소재: ',
     ctrlTitle: '조작', ctrlMove: '마우스로 ⭐을 움직여요', ctrlListen: '클릭 / Space: 다시 듣기', ctrlPause: 'Esc / P: 일시 정지',
+    pcOnly: '이 게임은 PC 전용이에요', pcOnlyBody: '마우스와 키보드로 놀아요. 스마트폰・태블릿은 지원하지 않아요.',
+    lockedLabel: '정식판', upsellTitle: '체험판을 즐겨 줘서 고마워요!', upsellBody: '정식판에서는 히라가나 104자 전부(고주온・탁음・요음・믹스)로 놀 수 있어요.', upsellBuy: '정식판 보기', upsellClose: '닫기', demoDone: '체험판의 모든 행을 클리어했어요! 정식판에서 이어서 해요.',
     pause: '일시 정지', resume: '계속하기', toMenu: '메뉴로', sayAgain: '다시 듣기',
     courseLeft: '코스 클리어까지 {n}개 남았어요: {list}',
     courseClear: '{name} 코스 클리어!', courseClearSub: '모든 행을 클리어했어요! 대단해요!', continue: '계속하기', enterHint: 'Enter 키로도 넘어갈 수 있어요',
@@ -788,6 +825,19 @@ function txt(key, vars) {
 /* the name shown for a course: rows keep their kana name (あ行), mixes are translated */
 function stageName(st) { return st.mix ? txt(st.id) : st.name; }
 
+/* ---------- demo version ----------
+   build_release.py puts window.KANA_BUBBLE_DEMO = { stages: [...], fullUrl } into the demo build only.
+   In the full version DEMO is null and nothing below changes anything. */
+const DEMO = window.KANA_BUBBLE_DEMO || null;
+function isLocked(st) { return !!DEMO && !DEMO.stages.includes(st.id); }
+function openUpsell() { $('#upsell').hidden = false; }
+function closeUpsell() { $('#upsell').hidden = true; }
+function goFullVersion() {
+  const url = (DEMO && DEMO.fullUrl) || 'https://itch.io/search?q=Kana+Bubble';
+  try { window.open(url, '_blank', 'noopener'); } catch (e) {}
+}
+const DEMO_KANA = DEMO ? new Set(STAGES.filter(st => !isLocked(st)).flatMap(st => st.list.map(it => it.k))) : null;   // kana playable in the demo
+
 /* ---------- storage (per-viewer convenience only) ---------- */
 const store = {
   get(k, d) { try { const v = localStorage.getItem('kanabubble.' + k); return v === null ? d : JSON.parse(v); } catch (e) { return d; } },
@@ -803,10 +853,12 @@ const store = {
    When these defaults change, SETTINGS_VERSION goes up: saved settings are cleared once so everyone starts
    from the new defaults (scores and records are kept), and from then on the player's own choices are remembered. */
 const DEFAULTS = { lang: 'en', hint: 'roma', speed: 'normal', muted: false, vol: { bgm: 80, voice: 50, sfx: 70 } };
-const SETTINGS_VERSION = 2;
-if (store.get('settingsVersion', 0) < SETTINGS_VERSION) {
-  ['lang', 'hint', 'mode', 'speed', 'muted', 'vol.bgm', 'vol.voice', 'vol.sfx'].forEach(k => { try { localStorage.removeItem('kanabubble.' + k); } catch (e) {} });
-  store.set('settingsVersion', SETTINGS_VERSION);
+const SETTINGS_VERSION = 3;
+{
+  const v = store.get('settingsVersion', 0), drop = k => { try { localStorage.removeItem('kanabubble.' + k); } catch (e) {} };
+  if (v < 2) ['lang', 'hint', 'mode', 'speed', 'muted', 'vol.bgm', 'vol.voice', 'vol.sfx'].forEach(drop);   // v2: new default settings
+  if (v < 3) drop('lang');                                                                                 // v3: English again as the start language
+  if (v < SETTINGS_VERSION) store.set('settingsVersion', SETTINGS_VERSION);
 }
 
 /* ---------- audio ----------
@@ -1080,7 +1132,7 @@ const Voice = {
     const tok = ++this.tok;
     if (this.src) { try { this.src.stop(); } catch (e) {} this.src = null; }
     if (this.el) { this.el.pause(); this.el = null; }
-    if (!this.hasRec(it)) { this.tts(it.k); return; }        // only kana without a recording use speech synthesis
+    if (!this.hasRec(it)) { if (!DEMO) this.tts(it.k); return; }        // only kana without a recording use speech synthesis
     if (!SFX.ctx) SFX.init();
     const p = this.load(it);
     const viaElement = () => {                              // second way to play the recording, if Web Audio can't
@@ -1172,8 +1224,9 @@ const Sea = {
   build() {
     this.size = W + 'x' + H;
     const rh = this.reefH = clamp(H * 0.24, 110, 240);
-    const c = document.createElement('canvas'); c.width = W * DPR; c.height = rh * DPR;
-    const x = c.getContext('2d'); x.scale(DPR, DPR); x.lineCap = 'round'; x.lineJoin = 'round';
+    const head = this.reefHead = rh * 0.8;                 // room above the reef so tall branches aren't cut off
+    const c = document.createElement('canvas'); c.width = W * DPR; c.height = (rh + head) * DPR;
+    const x = c.getContext('2d'); x.scale(DPR, DPR); x.translate(0, head); x.lineCap = 'round'; x.lineJoin = 'round';
     // two rows of coral: a hazy back row and a brighter front row
     for (const [alpha, baseY, scale] of [[0.35, rh * 0.78, 0.8], [0.72, rh * 0.98, 1]]) {
       x.globalAlpha = alpha;
@@ -1387,7 +1440,7 @@ const Sea = {
       ctx.beginPath(); ctx.moveTo(bx, by);
       ctx.bezierCurveTo(bx + sway * 0.3, by - w.h * 0.35, bx - sway * 0.5, by - w.h * 0.7, bx + sway, by - w.h); ctx.stroke();
     }
-    ctx.drawImage(this.reef, 0, H - this.reefH, W, this.reefH);
+    ctx.drawImage(this.reef, 0, H - this.reefH - this.reefHead, W, this.reefH + this.reefHead);
     for (const f of this.fish) if (f.alpha >= 0.6) this.drawAny(f);  // near creatures (and crabs on the sand) in front
   },
   drawAny(f) {
@@ -1768,7 +1821,8 @@ function buildMenu() {
       const ks = st.mix ? txt(st.fromAll ? 'allSub' : 'questions', { n: st.count }) : st.list.map(x => x.k).join('');
       const rm = st.mix ? '' : st.list.map(x => x.r.split(' ')[0]).join(' · ');
       b.innerHTML = `<div class="nm">${stageName(st)}</div><div class="ks">${ks}</div><div class="rm">${rm}</div><div class="best" data-best="${st.id}"></div>`;
-      b.addEventListener('click', () => startStage(st));
+      if (isLocked(st)) { b.classList.add('locked'); b.dataset.lock = txt('lockedLabel'); b.addEventListener('click', openUpsell); }
+      else b.addEventListener('click', () => startStage(st));
       cards.appendChild(b);
     });
     root.appendChild(box);
@@ -1850,12 +1904,13 @@ function buildChart() {
       cell.className = 'kcell' + (it ? '' : ' empty');
       if (it) {
         cell.innerHTML = `<span class="kk">${it.k}</span><span class="kr">${it.r}</span>`;
-        cell.addEventListener('click', () => { chartTok++; chartSay(it, cell); });
-        cells.push([it, cell]);
+        if (DEMO_KANA && !DEMO_KANA.has(it.k)) { cell.classList.add('locked'); cell.addEventListener('click', openUpsell); }
+        else { cell.addEventListener('click', () => { chartTok++; chartSay(it, cell); }); cells.push([it, cell]); }
       }
       row.appendChild(cell);
     }
     lab.querySelector('button').addEventListener('click', () => {      // play the whole row in order
+      if (!cells.length) { openUpsell(); return; }
       const tok = ++chartTok;
       cells.forEach(([it, cell], i) => setTimeout(() => { if (tok === chartTok) chartSay(it, cell); }, i * 850));
     });
@@ -1975,9 +2030,11 @@ function endStage(cleared) {
     Music.play(G.resultSong);
     // course progress: which stages of this course are still left (shown on the results to lead the player on)
     const course = cleared ? CourseProgress.complete(G.stage) : null;
-    const left = cleared && !course ? CourseProgress.remaining(G.stage) : [];
-    $('#resCourse').hidden = !left.length;
-    $('#resCourse').textContent = left.length ? txt('courseLeft', { n: left.length, list: left.map(stageName).join('・') }) : '';
+    const left = cleared && !course ? CourseProgress.remaining(G.stage).filter(x => !isLocked(x)) : [];
+    const demoDone = !!DEMO && cleared && !left.length;
+    $('#resCourse').hidden = !left.length && !demoDone;
+    $('#resCourse').textContent = left.length ? txt('courseLeft', { n: left.length, list: left.map(stageName).join('・') }) : demoDone ? txt('demoDone') : '';
+    $('#btnFull').hidden = !demoDone;
     if (course) { CourseProgress.reset(course); showCourseClear(course); } else $('#result').hidden = false;
   }, 1500);
 }
@@ -2053,12 +2110,17 @@ $('#btnNext').addEventListener('click', () => { if (G.nextStage) startStage(G.ne
 function nextStageOf(st) {
   const g = CourseProgress.groupOf(st);
   if (!g) return null;
-  const list = g.stages(), i = list.indexOf(st), left = CourseProgress.remaining(st).filter(x => x !== st);
+  const list = g.stages(), i = list.indexOf(st), left = CourseProgress.remaining(st).filter(x => x !== st && !isLocked(x));
   if (left.length) return list.slice(i + 1).concat(list.slice(0, i)).find(x => left.includes(x)) || null;
+  if (DEMO) return null;                                   // demo: nothing further — the results offer the full version
   const ng = COURSE_GROUPS[COURSE_GROUPS.indexOf(g) + 1];
   return ng ? ng.stages()[0] : null;
 }
 $('#btnMenu').addEventListener('click', toMenu);
+$('#btnFull').addEventListener('click', goFullVersion);
+$('#btnUpsellGo').addEventListener('click', goFullVersion);
+$('#btnUpsellClose').addEventListener('click', closeUpsell);
+if (DEMO) $('#demoBadge').hidden = false;
 $('#btnSay').addEventListener('click', e => { e.stopPropagation(); replay(); });
 function replay() { if (G.state === 'game' && G.phase === 'play' && !G.paused) { Voice.say(G.target); pulseSay(); } }
 function pulseSay() { const b = $('#btnSay'); b.classList.remove('pulse'); void b.offsetWidth; b.classList.add('pulse'); }
@@ -2106,18 +2168,20 @@ window.addEventListener('keydown', e => {
   const enter = e.code === 'Enter' || e.code === 'NumpadEnter';
   if (enter && !$('#courseClear').hidden) { e.preventDefault(); closeCourseClear(); return; }
   if (enter && !$('#result').hidden) { e.preventDefault(); if (!$('#btnNext').hidden) $('#btnNext').click(); return; }
-  if (e.code === 'Escape' && !$('#quitAsk').hidden) $('#quitAsk').hidden = true;
+  if (e.code === 'Escape' && !$('#upsell').hidden) closeUpsell();
+  else if (e.code === 'Escape' && !$('#quitAsk').hidden) $('#quitAsk').hidden = true;
   else if (e.code === 'Escape' && !$('#chart').hidden) closeChart();
   else if (e.code === 'Escape' || e.code === 'KeyP') { if (G.state === 'game') setPause(!G.paused); }
   else if ((e.code === 'Space' || e.code === 'Enter') && G.state === 'game') { e.preventDefault(); replay(); }
 });
 
 /* ---------- pointer ---------- */
-function setPtr(e) { ptr.mx = e.clientX; ptr.my = e.clientY; ptr.x = ptr.mx + ptr.kx; ptr.y = ptr.my + ptr.ky; ptr.active = true; }
+function setPtr(e) {
+  if (e.pointerType === 'touch') return;                    // PC game: the star follows the mouse only
+  ptr.mx = e.clientX; ptr.my = e.clientY; ptr.x = ptr.mx + ptr.kx; ptr.y = ptr.my + ptr.ky; ptr.active = true; }
 window.addEventListener('pointermove', setPtr);
 window.addEventListener('pointerdown', e => { setPtr(e); });
-cv.addEventListener('pointerdown', () => replay());
-window.addEventListener('pointerup', e => { if (e.pointerType === 'touch') { ptr.active = false; ptr.trail.length = 0; } });
+cv.addEventListener('pointerdown', e => { if (e.pointerType !== 'touch') replay(); });
 document.addEventListener('pointerleave', () => { ptr.active = false; });
 window.addEventListener('blur', () => { ptr.active = false; });
 
@@ -2779,6 +2843,8 @@ Run.init();
 SeaMood.init();
 ComboFX.init();
 applyLang(store.get('lang', DEFAULTS.lang));
+/* smartphones and tablets (no mouse at all) get a notice instead of the game */
+if (window.matchMedia && !matchMedia('(any-pointer: fine)').matches) { $('#menu').hidden = true; $('#pcOnly').hidden = false; }
 Events.on('stage:start', () => endCourseParade());   // a new stage always starts without the course-clear guests
 CourseProgress.init();
 Voice.init();
